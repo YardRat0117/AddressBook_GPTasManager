@@ -41,6 +41,9 @@ This project is a basic address book management system developed using C++. The 
 ```
 .
 ├── README.md
+├── GPTasManager_GeneratedDocuments
+│   ├── 项目文档.md
+│   └── 需求文档.md
 ```
 
 - `README.md`: Project documentation
