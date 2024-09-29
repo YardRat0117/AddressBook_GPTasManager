@@ -5,6 +5,25 @@
 
 using json = nlohmann::json;
 
+/*
+Module Code
+Contact         ->  -1
+User Interface  ->  0
+Address Book    ->  1
+Query Engine    ->  2
+Contact         ->  3
+Storage         ->  4
+
+Data Package Format
+dataPackage {
+    "sourceModuleCode" : int,   // Code of the module sending the data
+    "targetModuleCode" : int,   // Code of the module receiving the data
+    "requestCode" : int,        // Request code referring to specific action of the target module
+    // additional fields as needed
+}
+*/
+
+
 class IDataTransfer {
     public:
         // input
@@ -18,26 +37,43 @@ class IDataTransfer {
         virtual void sendData(const int& targetModuleCode, const json& dataPackage) = 0;
 };
 
-/*
-Module Code
-Data Transfer   ->      -1
-User Interface  ->      0
-Address Book    ->      1
-Query Engine    ->      2
-Storage         ->      3
-*/
 
 class IModule{
     public:
         // input
-        virtual void retrieveData(const json& data) = 0;
+        void retrieveData(const json& dataPackage) {
+            this->requestHandler(dataPackage);
+        }
+
+        // initialization
+        void initialize(IDataTransfer* dt, int moduleCode) {
+            this->dt = dt;
+            this->moduleCode = moduleCode;
+        }
 
         // deconstructor
         virtual ~IModule() {}
 
     protected:
+        // attribute
+        IDataTransfer* dt = nullptr;
+        int moduleCode;
+
+        // request
+        virtual void requestHandler(const json& requestPackage) = 0;
+
+        json requestWrapper(const int sourceModuleCode, const int targetModuleCode, const int requestCode) {
+            json requestPackage;
+            requestPackage["sourceModuleCode"] = sourceModuleCode;
+            requestPackage["targetModuleCode"] = targetModuleCode;
+            requestPackage["requestCode"] = requestCode;
+            return requestPackage;
+        }
+
         // output
-        virtual void sendData() = 0;
+        void sendData(const json& dataPackage) {
+            this->dt->retrieveData(dataPackage);
+        }
 
 };
 
@@ -47,17 +83,10 @@ class IUserInterface : public IModule {
         virtual ~IUserInterface() {}
 
     protected:
-        // input
-        virtual void retrieveRequest() = 0;
-        virtual void retrieveABFeedback() = 0;
-
-        // output
-        virtual void sendCommand() = 0;
-        virtual void sendQueryRequest() = 0;
-
         // function
-        virtual void requestHanlder() = 0;
-        virtual void feedbackDisplayer() = 0;
+        virtual void userRequestHandler() = 0;
+        virtual void feedbackDisplayer(const std::string ABFeedback) = 0;
+        virtual void showMenu() = 0;
 };
 
 class IAddressBook : public IModule {
@@ -66,15 +95,6 @@ class IAddressBook : public IModule {
         virtual ~IAddressBook() {}
 
     protected:
-        // input
-        virtual void retrieveCommand() = 0;
-        virtual void retrieveTarget() = 0;
-        virtual void retrieveCFeedback() = 0;
-
-        // output
-        virtual void sendABFeedback() = 0;
-        virtual void sendOperation() = 0;
-
         // function
         virtual void contactInitialization() = 0;
         virtual void contactPresentation() = 0;
@@ -88,14 +108,6 @@ class IQueryEngine : public IModule {
         virtual ~IQueryEngine() {}
 
     protected:
-        // input
-        virtual void retrieveQueryRequest() = 0;
-        virtual void retrieveQueryResult() = 0;
-
-        // output
-        virtual void sendTarget() = 0;
-        virtual void sendQueryInfo() = 0;
-
         // function
         virtual void contactQuery() = 0;
         virtual void contactTargating() = 0;
@@ -107,14 +119,6 @@ class IContact : public IModule{
         virtual ~IContact() {}
 
     protected:
-        // input
-        virtual void retirveOperation() = 0;
-        virtual void retriveContactLoading() = 0;
-
-        // output
-        virtual void sendCFeedback() = 0;
-        virtual void sendContactVariation() = 0;
-
         // function
         virtual void infoEntry() = 0;
         virtual void infoRetrieval() = 0;
@@ -127,14 +131,6 @@ class IStorage : public IModule{
         virtual ~IStorage() {}
         
     protected:
-        // input
-        virtual void retriveContactVariation() = 0;
-        virtual void retriveQueryInfo() = 0;
-        
-        // output
-        virtual void sendContactLoading() = 0;
-        virtual void sendQueryResult() = 0;
-        
         // function
         virtual void dataArchiving() = 0;
         virtual void dataIngestion() = 0;

@@ -44,13 +44,17 @@ This project is a basic address book management system developed using C++. The 
 ├── LICENSE
 ├── .gitignore
 ├── .gitattributes
-├── GPTasManager_GeneratedDocuments
+├── relevant documents
+│   ├── 开发日志.md
+│   ├── 系统设计文档.md
+│   ├── 系统设计文档补充.md
 │   ├── 项目文档.md
 │   └── 需求文档.md
 ├── include
-│   ├── json.hpp
-│   ├── interface.hpp
+│   ├── addressBook.hpp
 │   ├── dataTransfer.hpp
+│   ├── interface.hpp
+│   ├── json.hpp
 │   └── userInterface.hpp
 ```
 

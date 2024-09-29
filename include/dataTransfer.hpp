@@ -4,23 +4,24 @@
 #include "json.hpp"
 #include "Interface.hpp"
 
-#define MAX_MODULES 4
+const int MAX_MODULES = 5;
 
 using json = nlohmann::json;
 
 class dataTransfer : public IDataTransfer {
     public:
         // constructor
-        dataTransfer(const IModule* ui, const IModule* ab, const IModule* qe, const IModule* s) {
+        dataTransfer(const IModule* ui, const IModule* ab, const IModule* qe, const IModule* c, const IModule* s) {
             this->moduleArray[0] = ui;
             this->moduleArray[1] = ab;
             this->moduleArray[2] = qe;
-            this->moduleArray[3] = s;
+            this->moduleArray[3] = c;
+            this->moduleArray[4] = s;
         }
         // input
         void retrieveData(const json& dataPackage) override {
             int targetModuleCode = dataPackage["targetModuleCode"];
-            this-sendData(targetModuleCode, dataPackage);
+            this->sendData(targetModuleCode, dataPackage);
         }
 
         // deconstructor
