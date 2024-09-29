@@ -11,7 +11,7 @@ using json = nlohmann::json;
 class dataTransfer : public IDataTransfer {
     public:
         // constructor
-        dataTransfer(const IModule* ui, const IModule* ab, const IModule* qe, const IModule* c, const IModule* s) {
+        dataTransfer(IModule* ui, IModule* ab, IModule* qe, IModule* c, IModule* s) {
             this->moduleArray[0] = ui;
             this->moduleArray[1] = ab;
             this->moduleArray[2] = qe;
@@ -29,7 +29,7 @@ class dataTransfer : public IDataTransfer {
 
     protected:
         // attribute
-        const IModule* moduleArray[MAX_MODULES];
+        IModule* moduleArray[MAX_MODULES];
 
         // output
         void sendData(const int& targetModuleCode, const json& dataPackage) override {
