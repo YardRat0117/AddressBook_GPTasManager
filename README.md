@@ -16,6 +16,7 @@ This project is a basic address book management system developed using C++. The 
 │   └── main.cpp
 ├── include
 │   ├── addressBook.hpp
+│   ├── contact.hpp
 │   ├── dataTransfer.hpp
 │   ├── IModule.hpp
 │   ├── json.hpp
