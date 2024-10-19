@@ -1,38 +1,42 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <unordered_map>
 #include "json.hpp"
-#include "Interface.hpp"
-
-const int MAX_MODULES = 5;
+#include "IModule.hpp"
 
 using json = nlohmann::json;
 
-class dataTransfer : public IDataTransfer {
-    public:
-        // constructor
-        dataTransfer(IModule* ui, IModule* ab, IModule* qe, IModule* c, IModule* s) {
-            this->moduleArray[0] = ui;
-            this->moduleArray[1] = ab;
-            this->moduleArray[2] = qe;
-            this->moduleArray[3] = c;
-            this->moduleArray[4] = s;
+class dataTransfer {
+public:
+    void registerModule(const int moduleCode, IModule* module) {
+        if (modules.find(moduleCode) == modules.end()) {
+            modules[moduleCode] = module;
+            module->setDataTransfer(this);
+        } else {
+            std::cerr << "Error: Module with code " << moduleCode << " is already registered." << std::endl;
         }
-        // input
-        void retrieveData(const json& dataPackage) override {
-            int targetModuleCode = dataPackage["targetModuleCode"];
+    }
+
+    void retrieveData(const json& dataPackage) {
+        try {
+            int targetModuleCode = dataPackage.at("targetModuleCode");
             this->sendData(targetModuleCode, dataPackage);
+        } catch (json::exception& e) {
+            std::cerr << "Error: Missing targetModuleCode in dataPackage. " << e.what() << std::endl;
         }
+    }
 
-        // deconstructor
-        ~dataTransfer() override { /* there's nothing to do so far */ }
-
-    protected:
-        // attribute
-        IModule* moduleArray[MAX_MODULES];
-
-        // output
-        void sendData(const int& targetModuleCode, const json& dataPackage) override {
-            this->moduleArray[targetModuleCode]->retrieveData(dataPackage);
+    void sendData(const int& targetModuleCode, const json& dataPackage) {
+        auto it = modules.find(targetModuleCode);
+        if (it != modules.end()) {
+            it->second->retrieveData(dataPackage);
+        } else {
+            std::cerr << "Error: Target module with code " << targetModuleCode << " not found." << std::endl;
         }
+    }
+
+private:
+    std::unordered_map<int, IModule*> modules;
 };
