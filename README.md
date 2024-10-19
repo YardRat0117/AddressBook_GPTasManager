@@ -52,9 +52,12 @@ This project is a basic address book management system developed using C++. The 
 │   └── 需求文档.md
 ├── include
 │   ├── addressBook.hpp
+│   ├── contact.hpp
 │   ├── dataTransfer.hpp
 │   ├── interface.hpp
 │   ├── json.hpp
+│   ├── queryEngine.hpp
+│   ├── storage.hpp
 │   └── userInterface.hpp
 ```
 
